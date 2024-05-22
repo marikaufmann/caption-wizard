@@ -1,0 +1,70 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@ffmpeg/ffmpeg": "^0.12.6",
+    "@ffmpeg/util": "^0.12.1",
+    "@mui/material": "^5.15.15",
+    "@rajesh896/video-thumbnails-generator": "^2.3.9",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@tsparticles/engine": "^3.3.0",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.3.0",
+    "@types/ffmpeg": "^1.0.7",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.97",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "axios": "^1.6.8",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.368.0",
+    "postcss": "^8.4.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.51.3",
+    "react-loader-spinner": "^6.1.6",
+    "react-loading-dot": "^1.0.6",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+    "react-suspense-img": "^0.2.0",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "dev": "react-scripts start",
+    "build": "tsc & react-scripts build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-transform-private-property-in-object": "^7.24.5",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3"
+  }
+}
