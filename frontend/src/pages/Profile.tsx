@@ -244,7 +244,7 @@ const Profile = () => {
                 ))}
               </>
             ) : (
-              <div className="flex items-center justify-center pt-12 text-[#9DA0A8]">
+              <div className="flex items-center justify-center pt-12 text-[#9DA0A8] max-w-[800px]">
                 No transactions yet
               </div>
             )}

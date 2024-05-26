@@ -113,7 +113,8 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
       },
       {
         email: googleUser.email,
-        name: googleUser.name,
+        firstName: googleUser.given_name,
+        lastName: googleUser.family_name,
         picture: googleUser.picture,
       },
       {
