@@ -65,7 +65,7 @@ const Navbar = () => {
         <div className="flex">
           {currentUser && currentUser?.picture ? (
             <Link
-              to="/profile/account"
+              to="/profile"
               className="rounded-full sm:w-6 sm:h-6 w-4 h-4 mr-2  sm:mr-4"
             >
               <img
