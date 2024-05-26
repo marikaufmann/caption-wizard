@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { UserType } from "../shared/types";
 import bcrypt from "bcryptjs";
+import { paymentSchema } from "./payment.model";
 
 const userSchema = new mongoose.Schema(
   {
@@ -9,6 +10,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     picture: { type: String },
     password: { type: String, required: true },
+    credits: {type: Number, required: true, default: 10},
+    payments: [paymentSchema]
   },
   { timestamps: true }
 );

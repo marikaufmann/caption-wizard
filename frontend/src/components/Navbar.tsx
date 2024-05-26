@@ -1,4 +1,4 @@
-import { ArrowLeft, LogOut, Repeat, User2 } from "lucide-react";
+import { ArrowLeft, LogOut,  User2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useAppContext } from "../hooks/use-app-context";
 import * as apiClient from "../api-client";
@@ -15,7 +15,6 @@ const Navbar = () => {
     "fetchCurrentUser",
     apiClient.fetchCurrentUser
   );
-
   const { mutate: logOut } = useMutation(apiClient.logOut, {
     onError: (err: Error) => {
       showToast({ message: err.message, type: "ERROR" });
@@ -31,7 +30,6 @@ const Navbar = () => {
       setUserProfilePic(currentUser.picture as string);
     }
   }, [currentUser]);
-
   return (
     <div className="bg-background">
       <div className="max-w-7xl  justify-between py-3 sm:px-6 px-2 items-center mx-auto w-full flex gap-4 sm:gap-10 relative">
@@ -49,15 +47,16 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="flex sm:gap-4 gap-2 items-center ">
-          <button aria-label="refresh credits">
-            <Repeat className="text-white/80 hover:text-white w-4 h-4" />
-          </button>
-          <p className="text-white/80  max-sm:text-sm tracking-wide   min-w-[90px]">
-            10 credits left
+        <div className="flex items-center ">
+          <p className="text-white/80  max-sm:text-sm tracking-wide   min-w-[120px] w-full">
+            {currentUser?.credits &&
+              (currentUser?.credits % 1 === 0
+                ? currentUser?.credits
+                : (currentUser?.credits).toFixed(1))}
+            &nbsp;credits left
           </p>
           <Link
-            to="/subscription"
+            to="/credits"
             className="bg-lightGray min-w-[100px] text-center  shadow-lg py-1 px-3 rounded-lg text-white/80 hover:text-white hover:bg-[#50555b] max-sm:text-sm tracking-wide"
           >
             buy credits
@@ -77,7 +76,7 @@ const Navbar = () => {
             </Link>
           ) : (
             <Link
-              to="/profile/account"
+              to="/profile"
               className="sm:w-5 sm:h-5 w-4 h-4 sm:mr-4 mr-2"
             >
               <User2 className="w-full h-full rounded-full" />
@@ -86,7 +85,7 @@ const Navbar = () => {
           <button
             onClick={() => logOut()}
             className="flex items-center gap-2 text-white/80 hover:text-white max-sm:text-sm tracking-wide"
-            aria-label='logout'
+            aria-label="logout"
           >
             Logout
             <LogOut className="sm:w-4 sm:h-4 w-3 h-3" />

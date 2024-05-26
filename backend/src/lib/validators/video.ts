@@ -1,4 +1,4 @@
-import { any, object, string, TypeOf, z } from "zod";
+import { any, object, string, TypeOf, } from "zod";
 
 const payload = {
   body: object({
@@ -15,7 +15,7 @@ const payload = {
 const params = {
   params: object({
     videoId: string({
-      required_error: "videoId is required",
+      required_error: "Video id is required",
     }),
   }),
 };

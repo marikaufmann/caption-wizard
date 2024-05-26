@@ -7,7 +7,7 @@ const videoSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     name: { type: String, required: true },
     thumbnail: { type: String, required: true },
-    duration: { type: String, required: true },
+    duration: { type: Number, required: true },
     width: { type: Number, required: true },
     height: { type: Number, required: true },
     size: { type: String, required: true },

@@ -89,6 +89,50 @@ export const logOut = async () => {
     throw new Error("Something went wrong, please try again.");
   }
 };
+export const deleteAccount = async (userId: string) => {
+  try {
+    const data = await axios.delete(`${API_BASE_URL}/api/users/${userId}`, {
+      withCredentials: true,
+    });
+    return data;
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      if (err.response?.status === 401 || err.response?.status === 404) {
+        throw new Error(err.response.data.message);
+      }
+    }
+    throw new Error("Something went wrong, please try again.");
+  }
+};
+
+export const editUserData = async ({
+  formData,
+  userId,
+}: {
+  formData: FormData;
+  userId: string;
+}) => {
+  try {
+    const data = await axios.put(
+      `${API_BASE_URL}/api/users/${userId}`,
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+    return data;
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      if (err.response?.status === 401 || err.response?.status === 404) {
+        throw new Error(err.response.data.message);
+      }
+    }
+    throw new Error("Something went wrong, please try again.");
+  }
+};
 
 export const validateToken = async () => {
   try {
@@ -211,7 +255,7 @@ export const addCaptions = async ({
 }) => {
   try {
     const data = await axios.post(
-      `${API_BASE_URL}/api/videos/${projectId}/addCaptions`,
+      `${API_BASE_URL}/api/videos/${projectId}/add-captions`,
       formData,
       {
         withCredentials: true,
@@ -224,6 +268,33 @@ export const addCaptions = async ({
   } catch (err) {
     if (err instanceof AxiosError) {
       if (err.response?.status === 404) {
+        throw new Error(err.response.data.message);
+      }
+    }
+    throw new Error("Something went wrong, please try again.");
+  }
+};
+
+export const createPaymentIntent = async ({
+  creditsAmount,
+}: {
+  creditsAmount: number;
+}) => {
+  try {
+    const data = await axios.post(
+      `${API_BASE_URL}/api/credits/payment-intent`,
+      { creditsAmount },
+      {
+        withCredentials: true,
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+    return data.data.checkoutUrl;
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      if (err.response?.status === 400) {
         throw new Error(err.response.data.message);
       }
     }

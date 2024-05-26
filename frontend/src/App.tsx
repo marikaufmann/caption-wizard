@@ -7,7 +7,7 @@ import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import SignIn from "./pages/SignIn";
 import { useAppContext } from "./hooks/use-app-context";
-import Subscription from "./pages/Subscription";
+import Credits from "./pages/Credits";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
@@ -34,8 +34,8 @@ function App() {
             <>
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:projectId" element={<ProjectDetails />} />
-              <Route path="/profile/account" element={<Profile />} />
-              <Route path="/subscription" element={<Subscription />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/credits" element={<Credits />} />
             </>
           )}
           <Route path="*" element={<Navigate to="/" />} />

@@ -1,4 +1,4 @@
-import express, { Request, Response, urlencoded } from "express";
+import express, { NextFunction, Request, Response, urlencoded } from "express";
 import "dotenv/config";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
@@ -12,6 +12,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import usersRoutes from "./routes/users";
 import authRoutes from "./routes/session";
 import videosRoutes from "./routes/videos";
+import creditsRoutes from "./routes/credits";
 import deserializeUser from "./middleware/deserializeUser";
 
 cloudinary.config({
@@ -26,7 +27,13 @@ const app = express();
 connectDb();
 app.use(logger);
 app.use(cookieParser());
-app.use(express.json({ limit: "50mb" }));
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.originalUrl === "/api/credits/add-credits") {
+    express.raw({ type: "application/json" })(req, res, next);
+  } else {
+    express.json({ limit: "50mb" })(req, res, next);
+  }
+});
 app.use(urlencoded({ extended: true, limit: "50mb" }));
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, "../../frontend/build")));
@@ -34,6 +41,8 @@ app.use(deserializeUser);
 app.use("/api/users", usersRoutes);
 app.use("/api/sessions", authRoutes);
 app.use("/api/videos", videosRoutes);
+app.use("/api/credits", creditsRoutes);
+
 app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../../frontend/build/index.html"));
 });

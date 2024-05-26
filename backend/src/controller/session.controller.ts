@@ -1,6 +1,5 @@
 import { CookieOptions, Request, Response } from "express";
 
-import { ZodError } from "zod";
 import {
   findAndUpdateUser,
   getGoogleOAuthTokens,
@@ -60,9 +59,6 @@ export const createUserSessionHandler = async (
 
     res.status(201).json({ accessToken, refreshToken });
   } catch (err) {
-    if (err instanceof ZodError) {
-      return res.status(403).json({ message: err.message });
-    }
     return res
       .status(500)
       .json({ message: "Something went wrong. Please try again." });

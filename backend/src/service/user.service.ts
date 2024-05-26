@@ -6,7 +6,15 @@ import { omit } from "lodash";
 import axios from "axios";
 
 export const createUser = async (
-  input: Omit<UserType, "_id" | "createdAt" | "updatedAt" | "confirmPassword">
+  input: Omit<
+    UserType,
+    | "_id"
+    | "createdAt"
+    | "updatedAt"
+    | "confirmPassword"
+    | "payments"
+    | "credits"
+  >
 ) => {
   try {
     const user = await UserModel.create(input);
@@ -37,6 +45,9 @@ export const validatePassword = async ({
 
 export const findUser = async (query: FilterQuery<UserType>) => {
   return await UserModel.findOne(query).select("-password").lean();
+};
+export const deleteUser = async (query: FilterQuery<UserType>) => {
+  return await UserModel.deleteOne(query);
 };
 interface GoogleTokensResult {
   access_token: string;

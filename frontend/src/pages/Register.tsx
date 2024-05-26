@@ -6,18 +6,11 @@ import { useQueryClient, useMutation } from "react-query";
 import { RegisterFormData } from "../types";
 import { useAppContext } from "../hooks/use-app-context";
 import Loader from "../components/Loader";
-import { useEffect } from "react";
 
 const Register = () => {
-  const { isLoggedIn } = useAppContext();
   const { showToast } = useAppContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/projects", { replace: true });
-    }
-  }, [isLoggedIn, navigate]);
   const { mutate: registerUser, isLoading } = useMutation(apiClient.register, {
     onError: (err: Error) => {
       showToast({ message: err.message, type: "ERROR" });

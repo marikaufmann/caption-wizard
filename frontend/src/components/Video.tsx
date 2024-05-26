@@ -1,20 +1,14 @@
 import { Trash2, X } from "lucide-react";
 import { VideoType } from "../../../backend/src/shared/types";
 import * as apiClient from "../api-client";
-import {
-  useMutation,
-  useQueryClient,
-} from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import Loader from "./Loader";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAppContext } from "../hooks/use-app-context";
+import { secondsToHours } from "../utils";
 
-const Video = ({
-  video,
-}: {
-  video: VideoType;
-}) => {
+const Video = ({ video }: { video: VideoType }) => {
   const queryClient = useQueryClient();
   const { showToast } = useAppContext();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -33,7 +27,7 @@ const Video = ({
         return () => queryClient.setQueryData("fetchUsersVideos", prevResult);
       },
       onError: (err: Error) => {
-      showToast({ message: err.message, type: "ERROR" });
+        showToast({ message: err.message, type: "ERROR" });
       },
       onSuccess: () => {
         queryClient.invalidateQueries("fetchUsersVideos");
@@ -41,7 +35,7 @@ const Video = ({
       },
     }
   );
- 
+
   return (
     <div>
       {isDeleteOpen && (
@@ -50,7 +44,7 @@ const Video = ({
             <button
               className="absolute top-2 right-3"
               onClick={() => setIsDeleteOpen(false)}
-              aria-label='close'
+              aria-label="close"
             >
               <X className="text-white/50  hover:text-white/80" />
             </button>
@@ -64,7 +58,7 @@ const Video = ({
                 <button
                   className="py-3 flex-1 flex items-center justify-center text-gray-500 border border-gray-500 rounded-lg hover:bg-[#4b4c54] hover:text-white/90"
                   onClick={() => setIsDeleteOpen(false)}
-                  aria-label='cancel'
+                  aria-label="cancel"
                 >
                   Cancel
                 </button>
@@ -73,7 +67,7 @@ const Video = ({
                   onClick={() => {
                     deleteVideo(video._id);
                   }}
-                  aria-label='delete video'
+                  aria-label="delete video"
                 >
                   {isDeleting ? (
                     <div className="flex gap-2 items-center">
@@ -106,7 +100,10 @@ const Video = ({
               <h3 className="font-semibold  text-white/80 xs:w-[330px] w-[280px] sm:w-[130px] lg:w-[240px]  truncate">
                 {video.name}
               </h3>
-              <p className="text-white/60  font-semibold">{video.duration}</p>
+              <p className="text-white/60  font-semibold">
+                {/* {video.duration} */}
+                {secondsToHours(Number(video.duration))}
+              </p>
             </div>
           </div>
           <div className="gap-3 sm:flex hidden lg:gap-8 md:gap-6 items-center">
@@ -138,7 +135,7 @@ const Video = ({
           className="hover:bg-white/20 p-1 rounded-full w-10  items-center justify-center flex"
           onClick={() => setIsDeleteOpen(true)}
           disabled={isDeleting}
-          aria-label='open delete window'
+          aria-label="open delete window"
         >
           {isDeleting ? (
             <Loader />

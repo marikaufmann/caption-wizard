@@ -16,7 +16,9 @@ export const findSessions = async (query: FilterQuery<SessionType>) => {
 export const findSession = async (id: FilterQuery<SessionType>) => {
   return await SessionModel.findById(id).lean();
 };
-
+export const deleteAllSessions = async (query: FilterQuery<SessionType>) => {
+  return await SessionModel.deleteMany(query);
+};
 export const updateSession = async (
   query: FilterQuery<SessionType>,
   update: UpdateQuery<SessionType>

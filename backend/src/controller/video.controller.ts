@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
-import {
-  LineCaptionsType,
-  SentenceCaptionsType,
-  VideoType,
-} from "../shared/types";
+import { VideoType } from "../shared/types";
 import {
   deleteVideoFromCloud,
   findAndUpdateVideo,
@@ -17,12 +13,19 @@ import {
 } from "../service/video.service";
 import { MulterError } from "multer";
 import { SyncPrerecordedResponse } from "@deepgram/sdk";
+import { findAndUpdateUser, findUser } from "../service/user.service";
 export const uploadVideoHandler = async (req: Request, res: Response) => {
   try {
     const videoFile = req.file as Express.Multer.File;
-
     const newVideo: VideoType = req.body;
-
+    const user = await findUser({ _id: req.user._id });
+    let notEnoughCredits = false;
+    if (newVideo.duration / 60 > user!.credits) {
+      notEnoughCredits = true;
+      return res.status(400).json({
+        message: "Looks like you don't have enough credits to proceed.",
+      });
+    }
     const videoData = await uploadVideo(videoFile);
     let downloadUrl = videoData.videoUrl.split("/");
     downloadUrl.forEach((item, i) => {
@@ -35,7 +38,6 @@ export const uploadVideoHandler = async (req: Request, res: Response) => {
     newVideo.videoOriginalUrl = videoData.videoUrl;
 
     const video = await saveVideo(newVideo);
-
     const { result } = await transcribeFile(
       video.videoOriginalUrl,
       video.language
@@ -58,7 +60,20 @@ export const uploadVideoHandler = async (req: Request, res: Response) => {
         ],
       }
     );
-    return res.status(200).send({ video, result });
+    const newuser = await findAndUpdateUser(
+      {
+        _id: user?._id,
+      },
+      {
+        $inc: {
+          credits: -(newVideo.duration / 60),
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    return res.status(200).send({ video, result, notEnoughCredits });
   } catch (err) {
     if (err instanceof MulterError) {
       return res
@@ -95,7 +110,8 @@ export const updateVideoHandler = async (req: Request, res: Response) => {
       { captions: [req.body.newCaptions] },
       { new: true }
     );
-    if (!updatedVideo) return res.status(404).json({ message: "Video not found." });
+    if (!updatedVideo)
+      return res.status(404).json({ message: "Video not found." });
     return res.status(200).send(updatedVideo);
   } catch (err) {
     return res.status(500).json({ message: "Something went wrong." });

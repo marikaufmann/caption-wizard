@@ -37,7 +37,7 @@ router.delete(
   deleteVideoHandler
 );
 router.post(
-  "/:videoId/addCaptions",
+  "/:videoId/add-captions",
   requireUser,
   upload.single("newVideoFile"),
   addCaptionsHandler

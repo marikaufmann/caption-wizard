@@ -5,17 +5,9 @@ import * as apiClient from "../api-client";
 import { useAppContext } from "../hooks/use-app-context";
 import { useForm } from "react-hook-form";
 import { SignInFormData } from "../types";
-import { useEffect } from "react";
 
 const SignIn = () => {
-  const { isLoggedIn } = useAppContext();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/projects", { replace: true });
-    }
-  }, [isLoggedIn, navigate]);
-
   const queryClient = useQueryClient();
   const { showToast } = useAppContext();
   const { mutate: logIn } = useMutation(apiClient.logIn, {

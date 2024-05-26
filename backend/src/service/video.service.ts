@@ -1,8 +1,13 @@
 import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
-import { LineCaptionsType, SentenceCaptionsType, VideoType } from "../shared/types";
+import {
+  LineCaptionsType,
+  SentenceCaptionsType,
+  VideoType,
+} from "../shared/types";
 import VideoModel from "../models/video.model";
 import cloudinary from "cloudinary";
 import { createClient, SyncPrerecordedResponse } from "@deepgram/sdk";
+import { findUser } from "./user.service";
 
 export const getVideos = async (query: FilterQuery<VideoType>) => {
   return await VideoModel.find(query).sort({ createdAt: -1 });
@@ -28,10 +33,25 @@ export const deleteVideoFromCloud = async ({
     });
   }
 };
+export const deleteAllVideosFromCloud = async (userId: string) => {
+  const usersVideos = await VideoModel.find({ user: userId });
+  usersVideos.forEach(async (video) => {
+    await cloudinary.v2.uploader.destroy(video.videoOriginalPublicId, {
+      resource_type: "video",
+    });
+    if (video.videoWithCaptionsPublicId) {
+      await cloudinary.v2.uploader.destroy(video.videoWithCaptionsPublicId, {
+        resource_type: "video",
+      });
+    }
+  });
+};
 export const saveVideo = async (video: VideoType) => {
   return await VideoModel.create(video);
 };
-
+export const deleteAllVideos = async (query: FilterQuery<VideoType>) => {
+  return await VideoModel.deleteMany(query);
+};
 export const uploadVideo = async (videoFile: Express.Multer.File) => {
   const b64 = Buffer.from(videoFile.buffer).toString("base64");
   let dataURI = "data:" + videoFile.mimetype + ";base64," + b64;
@@ -97,7 +117,9 @@ export const uploadVideoWithCaptions = async (
   }
 };
 
-export const transformCaptionsIntoArrays = async (result: SyncPrerecordedResponse) => {
+export const transformCaptionsIntoArrays = async (
+  result: SyncPrerecordedResponse
+) => {
   const words = result?.results.channels[0].alternatives[0].words;
   const singleWordCaptionsArray = words?.map((caption) => ({
     ...caption,
@@ -170,5 +192,5 @@ export const transformCaptionsIntoArrays = async (result: SyncPrerecordedRespons
         .map((sentence) => sentenceCaptionsArray.push(sentence))
   );
 
-  return {singleWordCaptionsArray, lineCaptionsArray, sentenceCaptionsArray}
+  return { singleWordCaptionsArray, lineCaptionsArray, sentenceCaptionsArray };
 };

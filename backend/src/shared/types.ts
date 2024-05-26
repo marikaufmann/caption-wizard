@@ -7,6 +7,8 @@ export type UserType = {
   picture?: string;
   createdAt: Date;
   updatedAt: Date;
+  credits: number;
+  payments: PaymentType[];
 };
 
 export type SessionType = {
@@ -44,7 +46,7 @@ export type VideoType = {
   user: UserType["_id"];
   name: string;
   thumbnail: string;
-  duration: string;
+  duration: number;
   width: number;
   height: number;
   size: string;
@@ -56,6 +58,20 @@ export type VideoType = {
   videoWithCaptionslUrl: string;
   videoWithCaptionsPublicId: string;
   captions: CaptionsType[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PaymentType = {
+  _id: string;
+  userId: UserType["_id"];
+  name: string;
+  email: string;
+  total: number;
+  creditsAmount: number;
+  status: string;
+  receipt: string;
+  refunded: boolean;
   createdAt: Date;
   updatedAt: Date;
 };

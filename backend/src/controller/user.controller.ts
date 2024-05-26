@@ -1,11 +1,17 @@
 import { CookieOptions, Request, Response } from "express";
-import { CreateUserRequest, createUserValidator } from "../lib/validators/user";
-import { createUser } from "../service/user.service";
-import { createSession } from "../service/session.service";
+import { CreateUserRequest } from "../lib/validators/user";
+import {
+  createUser,
+  findUser,
+  findAndUpdateUser,
+  deleteUser,
+} from "../service/user.service";
+import { createSession, deleteAllSessions } from "../service/session.service";
 import { signJwt } from "../lib/utils/jwt";
-import { z } from "zod";
-import { MongooseError } from "mongoose";
-import { MongoServerError } from "mongodb";
+import {
+  deleteAllVideos,
+  deleteAllVideosFromCloud,
+} from "../service/video.service";
 
 const accessTokenCookieOptions: CookieOptions = {
   maxAge: 900000,
@@ -42,9 +48,7 @@ export const createUserHandler = async (
 
     return res.send({ accessToken, refreshToken });
   } catch (err: any) {
-    if (err instanceof z.ZodError) {
-      return res.status(403).json({ message: err.message });
-    } else if (err instanceof Error) {
+    if (err instanceof Error) {
       return res
         .status(409)
         .json({ message: "User with this email already exists." });
@@ -55,6 +59,57 @@ export const createUserHandler = async (
   }
 };
 
-export const getCurrentUser = (req: Request, res: Response) => {
-  return res.send(req.user);
+export const getCurrentUserHandler = async (req: Request, res: Response) => {
+  const user = await findUser({ _id: req.user._id });
+  return res.send(user);
+};
+
+export const editUserHandler = async (req: Request, res: Response) => {
+  try {
+    const isValid = req.params.userId === req.user._id;
+    if (!isValid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const updatedUser = await findAndUpdateUser(
+      { _id: req.params.userId },
+      {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+      },
+      {
+        new: true,
+      }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    return res.status(200).json({ message: "User updated successfully." });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Please try again." });
+  }
+};
+export const deleteUserHandler = async (req: Request, res: Response) => {
+  try {
+    const isValid = req.params.userId === req.user._id;
+    if (!isValid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const user = await findUser({ _id: req.params.userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    await deleteAllVideosFromCloud(user?._id);
+    await deleteAllVideos({ user: user?._id });
+    await deleteAllSessions({ user: user?._id });
+    await deleteUser({ _id: user?._id });
+
+    return res.status(200).json({ message: "Account permanently deleted." });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Please try again." });
+  }
 };

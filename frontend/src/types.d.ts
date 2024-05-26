@@ -10,9 +10,7 @@ export type SignInFormData = {
   email: string;
   password: string;
 };
-
-export type UserType = {
-  _id: string;
+export type UserProfileData = {
   firstName: string;
   lastName: string;
   email: string;

@@ -10,11 +10,14 @@ import {
   RefetchOptions,
   RefetchQueryFilters,
   useMutation,
+  useQuery,
+  useQueryClient,
 } from "react-query";
 import { VideoType } from "../../../backend/src/shared/types";
 import * as apiClient from "../api-client";
 import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
 import { languageOptions } from "../config";
+import { Link } from "react-router-dom";
 
 const VideoPreview = ({
   videoPreview,
@@ -30,13 +33,22 @@ const VideoPreview = ({
   selectedFile: File | undefined;
 }) => {
   const { showToast } = useAppContext();
+  const queryClient = useQueryClient();
+  const { data: currentUser } = useQuery(
+    "fetchCurrentUser",
+    apiClient.fetchCurrentUser
+  );
   const [limitExceeded, setLimitExceeded] = useState(false);
+  const [notEnoughCredits, setNotEnoughCredits] = useState(false);
   const [thumbnail, setThumbnail] = useState<string | undefined>(undefined);
   const [name, setName] = useState<string | undefined>(undefined);
   const [width, setWidth] = useState<number | undefined>(undefined);
   const [height, setHeight] = useState<number | undefined>(undefined);
   const [size, setSize] = useState<string | undefined>(undefined);
-  const [duration, setDuration] = useState<string | undefined>(undefined);
+  const [formattedDuration, setFormattedDuration] = useState<
+    string | undefined
+  >(undefined);
+  const [duration, setDuration] = useState<number | undefined>(undefined);
   const [language, setLanguage] = useState<{
     value: string;
     label: string[];
@@ -54,6 +66,7 @@ const VideoPreview = ({
       onSuccess: async () => {
         clearFiles();
         refetchVideos();
+        await queryClient.invalidateQueries("fetchCurrentUser");
         showToast({ message: "Video uploaded successfully.", type: "SUCCESS" });
       },
     }
@@ -62,7 +75,7 @@ const VideoPreview = ({
     const formData = new FormData();
     formData.append("videoFile", file);
     formData.append("name", name as string);
-    formData.append("duration", duration as string);
+    formData.append("duration", Number(duration).toString());
     formData.append("size", size as string);
     formData.append("width", Number(width).toString());
     formData.append("height", Number(height).toString());
@@ -75,7 +88,11 @@ const VideoPreview = ({
     const fillVideoInfo = () => {
       if (selectedFile) {
         setHeight(videoElement?.videoHeight);
-        setDuration(secondsToHours(videoElement?.duration));
+        setFormattedDuration(secondsToHours(videoElement?.duration));
+        setDuration(videoElement?.duration);
+        if (videoElement?.duration / 60 > currentUser!.credits) {
+          setNotEnoughCredits(true);
+        }
         setSize(
           readBytes(selectedFile.size, 1, (value) => setLimitExceeded(value))
         );
@@ -94,7 +111,7 @@ const VideoPreview = ({
     videoElement?.addEventListener("loadedmetadata", fillVideoInfo);
     return () =>
       videoElement?.removeEventListener("loadedmetadata", fillVideoInfo);
-  }, [selectedFile, videoPreview]);
+  }, [selectedFile, videoPreview, currentUser]);
 
   const formatOptionLabel = ({
     value,
@@ -146,12 +163,12 @@ const VideoPreview = ({
               {name}
             </h1>
           )}
-          {duration && width && height && size && (
+          {formattedDuration && width && height && size && (
             <p className="text-white/60 tracking-wider">
-              {duration} • {width}x{height} • {size}
+              {formattedDuration} • {width}x{height} • {size}
             </p>
           )}
-          {limitExceeded ? (
+          {limitExceeded  ? (
             <div className="flex mt-4 gap-4 tracking-wider items-center">
               <TriangleAlert className="text-red-500" />
               <p className="text-white/90">
@@ -165,6 +182,27 @@ const VideoPreview = ({
               </p>
             </div>
           ) : (
+            notEnoughCredits ? (
+              <div className="flex mt-4 gap-4 tracking-wider items-center">
+                <TriangleAlert className="text-red-500" />
+                <p className="text-white/90">
+                  <span className="font-semibold text-red-500">
+                    Oops, an error occurred.
+                  </span>{" "}
+                  <br />
+                  Looks like you are out of credits.
+                  <br />
+                  Not to worry! You can buy more{" "}
+                  <Link
+                    to="/credits"
+                    className="underline underline-offset-2 font-semibold"
+                  >
+                    here
+                  </Link>
+                  .
+                </p>
+              </div>
+            ) :
             <div>
               <div className="flex gap-2 flex-col h-fit mt-4">
                 <h1 className="text-white/60">
