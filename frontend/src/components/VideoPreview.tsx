@@ -176,7 +176,7 @@ const VideoPreview = ({
                   Oops, an error occurred!
                 </span>{" "}
                 <br />
-                The file likely exceeds the maximum file size (1 GB) and cannot
+                The file likely exceeds the maximum file size (100 MB) and cannot
                 be uploaded. <br />
                 Please try again with a smaller file.
               </p>

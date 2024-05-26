@@ -120,7 +120,7 @@ const Videos = ({
                 htmlFor="uploadVideo"
                 className="bg-primary shadow-primary/50 text-white/90 tracking-wider flex w-[400px] items-center justify-center  md:px-10 py-3 px-8 rounded-lg shadow-2xl hover:bg-primary/80 font-semibold cursor-pointer"
               >
-                Upload a video (MP4 file, up to 1 GB)
+                Upload a video (MP4 file, up to 100 MB)
                 <input
                   id="uploadVideo"
                   onClick={onInputClick}

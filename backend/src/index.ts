@@ -31,10 +31,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.originalUrl === "/api/credits/add-credits") {
     express.raw({ type: "application/json" })(req, res, next);
   } else {
-    express.json({ limit: "50mb" })(req, res, next);
+    express.json({ limit: "100mb" })(req, res, next);
   }
 });
-app.use(urlencoded({ extended: true, limit: "50mb" }));
+app.use(urlencoded({ extended: true, limit: "100mb" }));
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, "../../frontend/build")));
 app.use(deserializeUser);

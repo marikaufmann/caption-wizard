@@ -47,7 +47,7 @@ export const readBytes = (
   decimals = 2,
   handleLimit: (value: boolean) => void
 ) => {
-  if (bytes >= 1000000000) {
+  if (bytes >= 100000000) {
     handleLimit(true);
   } else {
     handleLimit(false);
